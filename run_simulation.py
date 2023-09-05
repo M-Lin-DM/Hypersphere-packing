@@ -28,12 +28,12 @@ print(len(tri.simplices))
 #
 G = convert_triangulation_to_graph(tri)
 # print(G.nodes)
-# print(G.edges)
+print(G.edges)
 print(G.degree)
 
-G, neibs = get_neighbor_dists(G, emb)
+G = get_neighbor_dists(G, emb)
 
-print(neibs)
+# print(neibs)
 print(G.nodes.data())
 
 

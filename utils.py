@@ -154,9 +154,9 @@ def plot_links(ax, points, G):
 
 def get_neighbor_dists(G, points):
     """returns array where each row is the indices of the neighbors of that vertex, in the graph G"""
-    neibs = []
+    # neibs = []
     for j, node in enumerate(G):
         j_neibs = list(G.neighbors(node))
-        neibs.extend([j_neibs])
+        # neibs.extend([j_neibs])
         G.nodes[node]['neighbor_dist'] = np.linalg.norm(points[j_neibs] - points[j][None, :], axis=1)
-    return G, neibs
+    return G
