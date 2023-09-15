@@ -6,6 +6,7 @@ from tqdm import tqdm
 from knn_forces import KNNSymmetricForces
 from utils import norm_of_matrix_rows, add_core, convert_triangulation_to_graph, get_neighbor_dists
 from scipy.spatial import Delaunay
+from evaluations import plot_neighbor_dists
 
 n_particles = 24
 dim = 4
@@ -28,12 +29,12 @@ print(len(tri.simplices))
 #
 G = convert_triangulation_to_graph(tri)
 # print(G.nodes)
-# print(G.edges)
+print(G.edges)
 print(G.degree)
 
-G, neibs = get_neighbor_dists(G, emb)
+G = get_neighbor_dists(G, emb)
 
-print(neibs)
+# print(neibs)
 print(G.nodes.data())
-
+# plot_neighbor_dists(G)
 
