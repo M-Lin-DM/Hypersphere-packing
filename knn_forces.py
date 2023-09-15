@@ -13,7 +13,7 @@ class KNNSymmetricForces:
      It's called KNNsymmetric because the force only acts using info on ones KNN, and "symmetric" because two neighbors will have the exact same equilibrium distance in relation to each other.
      Namely r0 = sizes_to_r0_scale*(size_p + size_d)'''
 
-    def __init__(self, zeta=0.1, K=1, alpha=30, beta=0.1):
+    def __init__(self, zeta=0.1, K=1, alpha=30, beta=0.05):
         self.zeta = zeta  # learning rate for each point
         self.beta = beta
         self.K = K
@@ -50,14 +50,16 @@ class KNNSymmetricForces:
         tri = Delaunay(emb, qhull_options='QJ')
         G = convert_triangulation_to_graph(tri)
         for j, k in G.edges:
-            if j > 0 and k > 0:  # we dont modify the core or any links with it since particles already experience a force towards it
-                j2k = (emb[k] - emb[j])[None, :]  # k - j points from j to k
-                separation = np.linalg.norm(j2k, axis=1)
-                # print(f"separation: {separation}")
-                j2k_hat = normalize_data_matrix(j2k)[0]
-                # print(f'j2khat {np.linalg.norm(j2k_hat)}')
-                if separation <= 1.9 or separation >= 2.1:
+            # if j > 0 and k > 0:  # we dont modify the core or any links with it since particles already experience a force towards it
+            j2k = (emb[k] - emb[j])[None, :]  # k - j points from j to k
+            separation = np.linalg.norm(j2k, axis=1)
+            # print(f"separation: {separation}")
+            j2k_hat = normalize_data_matrix(j2k)[0]
+            # print(f'j2khat {np.linalg.norm(j2k_hat)}')
+            if separation <= 1.9 or separation >= 2.1:
+                if j > 0:  # dont move the core
                     emb[j] += j2k_hat * self.force_of_r(separation) * self.beta
+                elif k > 0:
                     emb[k] -= j2k_hat * self.force_of_r(separation) * self.beta
         return emb[1:, :]
 
@@ -67,14 +69,15 @@ class KNNSymmetricForces:
         sizes = 80 * np.ones(shape=(len(dat_new), 1))
 
         for t in tqdm(range(n_iterations)):
-            dat_new = self.update_points(dat_new)
+            if 0 < t < 500:
+                dat_new = self.update_points(dat_new)
             # draw_plot_2D(dat_new, colors, sizes, t=t)
-            # if t > 450:
-            #     draw_plot_3D(dat_new, colors, sizes, n_iterations, t=t)
-            if 500 < t < 600:
+            if t > 485:
+                draw_plot_3D(dat_new, colors, sizes, n_iterations, t=t)
+            if 500 <= t < 1000:
                 dat_new = self.regularize_simplices(
                     dat_new)  # microadjustment for pairs of kissing nodes that differ in separation from distance=2.
-                print(t)
+                # print(t)
 
 
         return dat_new

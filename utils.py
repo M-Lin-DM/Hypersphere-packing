@@ -91,7 +91,7 @@ def elevation(f):
 
 
 def cam_dist(f):
-    return 5 + 0 * np.sin(f * np.pi * 4)
+    return 3 + 0 * np.sin(f * np.pi * 4)
 
 
 def draw_plot_3D(u, colors, sizes, n_iterations, t=1, save_path=f"{config.MOVIE_IMAGE_DIR}"):
